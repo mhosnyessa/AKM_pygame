@@ -1,4 +1,5 @@
 
+import os
 import pygame
 from player.player import Player
 from player import villain
@@ -7,19 +8,26 @@ pygame.font.init()
 GAME_NAME = "AKM"
 WIDTH, HEIGHT = 750, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+PADDING = 15
+heart = pygame.image.load(
+    os.path.join("assets", "heart.png"))
+heartHeight = 40
+heart = pygame.transform.scale(
+    heart, (heart.get_width() * (heartHeight / heart.get_height()), 40))
+
 FPS = 60
 BG = GREY = (100, 100, 100)
 BLACK = (0, 0, 0)
 # main_font = pygame.font.SysFont("comicsans", 50)
 # lost_font = pygame.font.SysFont("comicsans", 60)
-pygame.display.set_caption(f"{GAME_NAME}")
+pygame.display.set_caption(f"Now you'r playing :- {GAME_NAME} game")
 # Load images
 
 
 def main():
     run = True
     level = 0
-    lives = 5
+    lives = 3
 
     enemy_vel = 1
 
@@ -34,7 +42,7 @@ def main():
     lost_count = 0
 
     villians = []
-    for i in range(4):
+    for i in range(15):
         villians.append(villain.Villain(WIN))
 
     def redraw_window():
@@ -42,24 +50,41 @@ def main():
         # draw text
         # pygame.display.update()
 
+    main_font = pygame.font.SysFont("comicsans", 65)
+    score = 0
     while run:
+
         pygame.time.Clock().tick(FPS)
         redraw_window()
+        for i in range(1, lives + 1):
+            WIN.blit(
+                heart, (int(WIN.get_width() - (heart.get_width() + PADDING) * i), PADDING))
+        score_label = main_font.render(f"score: {score}", 1, (255, 255, 255))
+        WIN.blit(score_label, (int(WIN.get_width() / 2 - score_label.get_width() / 2),
+                               int(20)))
         player.draw()
-        for i in villians:
-            i.move_random()
+        if villians:
+            for i in villians:
+                i.move_random()
+                if i.is_off_screen() or i.collide(player):
+                    villians.remove(i)
+                    score += 1
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:  # left
-            player.moveBy(-player_vel, 0)
-        if keys[pygame.K_d]:  # right
-            player.moveBy(player_vel, 0)
-        if keys[pygame.K_w]:  # up
-            player.moveBy(0, -player_vel)
-        if keys[pygame.K_s]:  # down
-            player.moveBy(0, player_vel)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_a]:  # left
+                player.moveBy(-player_vel, 0)
+            if keys[pygame.K_d]:  # right
+                player.moveBy(player_vel, 0)
+            if keys[pygame.K_w]:  # up
+                player.moveBy(0, -player_vel)
+            if keys[pygame.K_s]:  # down
+                player.moveBy(0, player_vel)
+        else:
+
+            label = main_font.render(f"you WON!!", 1, (255, 255, 255))
+            WIN.blit(label, (int(WIN.get_width() / 2 - label.get_width() / 2),
+                     int(WIN.get_height() / 2 - label.get_height())))
         pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()

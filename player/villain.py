@@ -18,9 +18,9 @@ import random
 
 class Villain(Player):
 
-    def __init__(self, window: pygame.Surface, size=(50, 50), color=(100, 200, 100), x: int = 100, y: int = 100):
-        self.size = self.w, self.h = 20, 20
-        super().__init__(x, y, window)
+    def __init__(self, window: pygame.Surface, size=(30, 30), color=(100, 200, 100), x: int = 100, y: int = 100):
+        super().__init__(x, y, window, size)
+        self.size = self.w, self.h = size
         # self.speed = self.speed* 0.2
         self. __draw_random()
         self.repetitiveCounterX = 0
@@ -42,6 +42,9 @@ class Villain(Player):
     def move_random(self):
         # random_point = x, y = random.randint(
         #     0, self.window.get_width()), random.randint(0, self.window.get_height())
+        # if self.is_off_screen():
+        #     del()
+
         if self.position_x < self.randomPointX:
             self.position_x += self.speed
             self.repetitiveCounterX += 1
@@ -72,13 +75,9 @@ class Villain(Player):
                 self.position_x - self.randomPointX) <= self.speed and abs(
                     self.position_x - self.randomPointX) <= self.speed:
             self.__random_point_canvas()
-            print('hello there')
-            pass
 
         if self.repetitiveCounterX > self.maxRepeat or self.repetitiveCounterY >= self.maxRepeat:
             self.__random_point_canvas()
-            pass
-
         self.draw()
         # self.moveBy(random.random() * self.speed / 2,
         #             random.random() * self.speed / 2)
@@ -93,8 +92,14 @@ class Villain(Player):
         self.random_point = self.randomPointX, self.randomPointY = random.randint(
             0, self.window.get_width()), random.randint(0, self.window.get_height())
 
-    def __del__():
-        pass
+    # def killOneself(self):
+    #     del()
+    #     pass
 
-    def killOneself(self):
-        pass
+    def collide(obj1, obj2):
+        # obj1 = obj1.img
+        # obj2 = obj2.img
+        offset_x = obj2.position_x - obj1.position_x
+        offset_y = obj2.position_y - obj1.position_y
+
+        return (obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None)
