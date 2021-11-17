@@ -1,6 +1,7 @@
 import pygame
-from .player import Player
+from .entity import Entity
 import random
+import math
 
 
 # class Child(player.Obj):
@@ -16,7 +17,7 @@ import random
 # child.print_name_from_child()
 
 
-class Villain(Player):
+class Villain(Entity):
 
     def __init__(self, window: pygame.Surface, size=(30, 30), color=(100, 200, 100), x: int = 100, y: int = 100):
         super().__init__(x, y, window, size)
@@ -25,6 +26,7 @@ class Villain(Player):
         self. __draw_random()
         self.repetitiveCounterX = 0
         self.repetitiveCounterY = 0
+        self.speed = 4
         self.maxRepeat = 3
         self.random_point = self.randomPointX, self.randomPointY = random.randint(
             0, self.window.get_width()), random.randint(0, self.window.get_height())
@@ -44,41 +46,54 @@ class Villain(Player):
         #     0, self.window.get_width()), random.randint(0, self.window.get_height())
         # if self.is_off_screen():
         #     del()
+        rx = self.randomPointX
+        ry = self.randomPointY
+        x = self.position_x
+        y = self.position_y
 
-        if self.position_x < self.randomPointX:
-            self.position_x += self.speed
-            self.repetitiveCounterX += 1
-            self.repetitiveCounterY = 0
+        angle = math.atan2(ry - y, rx - x)
 
-        if self.position_x > self.randomPointX:
-            self.position_x -= self.speed
-            self.repetitiveCounterX += 1
-            self.repetitiveCounterY = 0
+        x_vel = math.cos(angle) * self.speed
+        y_vel = math.sin(angle) * self.speed
 
-        if self.position_y < self.randomPointY:
-            self.position_y += self.speed
-            self.repetitiveCounterY += 1
-            self.repetitiveCounterX = 0
+        self.moveBy(x_vel, y_vel)
 
-        if self.position_y > self.randomPointY:
-            self.position_y -= self.speed
-            self.repetitiveCounterY += 1
-            self.repetitiveCounterX = 0
+        # if self.position_x < self.randomPointX:
+        #     self.position_x += self.speed
+        #     self.repetitiveCounterX += 1
+        #     self.repetitiveCounterY = 0
 
-        self.position = self.position_x, self.position_y
+        # if self.position_x > self.randomPointX:
+        #     self.position_x -= self.speed
+        #     self.repetitiveCounterX += 1
+        #     self.repetitiveCounterY = 0
 
-        if self.repetitiveCounterX > self.maxRepeat or self.repetitiveCounterY >= self.maxRepeat:
-            self.__random_point_canvas()
+        # if self.position_y < self.randomPointY:
+        #     self.position_y += self.speed
+        #     self.repetitiveCounterY += 1
+        #     self.repetitiveCounterX = 0
+
+        # if self.position_y > self.randomPointY:
+        #     self.position_y -= self.speed
+        #     self.repetitiveCounterY += 1
+        #     self.repetitiveCounterX = 0
+
+        # self.position = self.position_x, self.position_y
+
+        # if self.repetitiveCounterX > self.maxRepeat or self.repetitiveCounterY >= self.maxRepeat:
+        #     self.__random_point_canvas()
 
         # if self.position == self.random_point:
-        if abs(
-                self.position_x - self.randomPointX) <= self.speed and abs(
-                    self.position_x - self.randomPointX) <= self.speed:
+        # if abs(
+        #         self.position_x - self.randomPointX) <= self.speed and abs(
+        #             self.position_x - self.randomPointX) <= self.speed:
+        #     self.__random_point_canvas()
+        if abs(x - rx) <= x_vel or abs(y - ry) <= y_vel:
             self.__random_point_canvas()
 
-        if self.repetitiveCounterX > self.maxRepeat or self.repetitiveCounterY >= self.maxRepeat:
-            self.__random_point_canvas()
-        self.draw()
+        # if self.repetitiveCounterX > self.maxRepeat or self.repetitiveCounterY >= self.maxRepeat:
+        #     self.__random_point_canvas()
+        # self.draw()
         # self.moveBy(random.random() * self.speed / 2,
         #             random.random() * self.speed / 2)
 
@@ -90,7 +105,7 @@ class Villain(Player):
 
     def __random_point_canvas(self):
         self.random_point = self.randomPointX, self.randomPointY = random.randint(
-            0, self.window.get_width()), random.randint(0, self.window.get_height())
+            0, self.window.get_width() - self.w), random.randint(0, self.window.get_height() - self.h)
 
     # def killOneself(self):
     #     del()

@@ -1,14 +1,18 @@
-
 import os
 import pygame
 from player.player import Player
 from player import villain
+# this is the main branch
 pygame.font.init()
-
+pygame.init()
 GAME_NAME = "AKM"
 WIDTH, HEIGHT = 750, 750
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+# below is when you want it to be full screen
+# WIN = pygame.display.set_mode()
 PADDING = 15
+# player_sprite = pygame.image.load(os.path.join(
+#     'assets', '2 GraveRobber', 'GraveRobber_walk.png')).convert_alpha()
 heart = pygame.image.load(
     os.path.join("assets", "heart.png"))
 heartHeight = 40
@@ -28,13 +32,10 @@ def main():
     run = True
     level = 0
     lives = 3
-
     enemy_vel = 1
-
     player_vel = 5
     laser_vel = 5
-
-    player = Player(100, 130, WIN)
+    player = Player(100, 130, WIN, 0)
 
     clock = pygame.time.Clock()
 
@@ -62,25 +63,19 @@ def main():
         score_label = main_font.render(f"score: {score}", 1, (255, 255, 255))
         WIN.blit(score_label, (int(WIN.get_width() / 2 - score_label.get_width() / 2),
                                int(20)))
+
         player.draw()
         if villians:
             for i in villians:
                 i.move_random()
-                if i.is_off_screen() or i.collide(player):
+                # if i.is_off_screen() or i.collide(player):
+                if i.collide(player):
                     villians.remove(i)
                     score += 1
 
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_a]:  # left
-                player.moveBy(-player_vel, 0)
-            if keys[pygame.K_d]:  # right
-                player.moveBy(player_vel, 0)
-            if keys[pygame.K_w]:  # up
-                player.moveBy(0, -player_vel)
-            if keys[pygame.K_s]:  # down
-                player.moveBy(0, player_vel)
+            player.move_by_keys(keys)
         else:
-
             label = main_font.render(f"you WON!!", 1, (255, 255, 255))
             WIN.blit(label, (int(WIN.get_width() / 2 - label.get_width() / 2),
                      int(WIN.get_height() / 2 - label.get_height())))
